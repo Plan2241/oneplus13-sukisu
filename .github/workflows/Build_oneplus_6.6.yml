@@ -67,6 +67,24 @@ jobs:
       - name: Set CCACHE_DIR 
         run: |
           echo "CCACHE_DIR=$HOME/.ccache_${kernel_choice}" >> $GITHUB_ENV
+
+      - name: Set MANIFEST 
+        id: set_manifest
+        run: |
+          case "${{ github.event.inputs.kernel_choice }}" in
+            oneplus_ace5_pro)
+              echo "REPO_MANIFEST=JiuGeFaCai_oneplus_ace5_pro_v" >> $GITHUB_ENV
+              echo "DEVICES_NAME=oneplus_ace5_pro" >> $GITHUB_ENV
+              ;;
+            oneplus_13)
+              echo "REPO_MANIFEST=JiuGeFaCai_oneplus_13_v" >> $GITHUB_ENV
+              echo "DEVICES_NAME=oneplus_13" >> $GITHUB_ENV
+              ;;
+            *)
+              echo "REPO_MANIFEST=${{ github.event.inputs.REPO_MANIFEST }}" >> $GITHUB_ENV
+              echo "DEVICES_NAME=${{ github.event.inputs.REPO_MANIFEST }}" >> $GITHUB_ENV
+              ;;
+          esac
           
       - name: Configure Git
         run: |
