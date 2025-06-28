@@ -271,7 +271,7 @@ jobs:
         run: | 
          cd kernel_workspace/kernel_platform
          sed -i 's/${scm_version}//' ./common/scripts/setlocalversion
-         if [ "${{ orignal_kernel_time_name }}" == "true" ]; then
+         if "${{ orignal_kernel_time_name }}" ; then
            case "${{ inputs.kernel_choice }}" in
              'oneplus_13')
               kernel_suffix="-android15-8-g013ec21bba94-abogki383916444-4k"
@@ -299,7 +299,7 @@ jobs:
 
       - name: Set Kernel Time
         run: | 
-         if [ "${{ orignal_kernel_time_name }}" == "true" ]; then
+         if "${{ orignal_kernel_time_name }}" ; then
            case "${{ inputs.kernel_choice }}" in
              'oneplus_13')
                KBUILD_DATE="Tue Dec 17 23:36:49 UTC 2024"  # 示例日期，替换为实际值
