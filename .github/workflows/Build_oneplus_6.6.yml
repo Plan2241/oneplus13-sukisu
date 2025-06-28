@@ -296,7 +296,6 @@ jobs:
            kernel_suffix="${{ github.event.inputs.kernel_suffix }}"
          fi
            sudo sed -i 's/-4k/${{ github.event.inputs.kernel_suffix }}/g' ./common/arch/arm64/configs/gki_defconfig
-
       - name: Set Kernel Time
         run: | 
           if [ "${{ orignal_kernel_time_name }}" == "true" ]; then
