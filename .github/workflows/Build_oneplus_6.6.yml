@@ -354,5 +354,5 @@ jobs:
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:
-         name: SuKiSu_${{ env.KSUVER }}_oneplus_13
+         name: SuKiSu_${{ env.KSUVER }}_${{ inputs.kernel_choice }}
          path: ./AnyKernel3/*
