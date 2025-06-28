@@ -22,12 +22,12 @@ on:
       
       kernel_suffix:
         description: '内核名称修改(可改中文和emoji)，只有在没有勾选上方‘使用该机型原内核名称和构建日期时生效’'
-        required: true
+        required: false
         default: '-酷安FutabaWa'
         
       kernel_time:
        description: "内核构建日期更改，只有在没有勾选上方‘使用该机型原内核名称和构建日期时生效"
-       required: true
+       required: false
        default: ' '
        
       enable_feature_x:
