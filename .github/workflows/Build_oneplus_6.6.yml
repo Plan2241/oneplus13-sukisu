@@ -11,7 +11,7 @@ on:
           - 'oneplus_ace5_pro'
           - 'oneplus_13t'
           - 'oneplus_pad_2_pro'
-          - 'oneplus_ace5_ultra'
+          - 'oneplus_ace5_Ultra'
         default: 'oneplus_13'
         
       orignal_kernel_time_name:
