@@ -1,4 +1,4 @@
-name: oneplus_13
+name: Build_oneplus_6.6
 on:
   workflow_dispatch:
     inputs:
