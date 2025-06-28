@@ -269,65 +269,63 @@ jobs:
           
       - name: Set Kernel Name
         run: | 
-         cd kernel_workspace/kernel_platform
-         sed -i 's/${scm_version}//' ./common/scripts/setlocalversion
-         if [ "${{ orignal_kernel_time_name }}" == "true" ]; then
-           case "${{ inputs.kernel_choice }}" in
-             'oneplus_13')
-              kernel_suffix="-android15-8-g013ec21bba94-abogki383916444-4k"
+         env:
+          REPO_MANIFEST: ${{ github.event.inputs.kernel_choice }}
+          KEEP_ORIGINAL: ${{ github.event.inputs.orignal_kernel_tima_name }}
+          CUSTOM_SUFFIX: ${{ github.event.inputs.kernel_suffix }}
+          cd kernel_workspace/kernel_platform
+
+          case "$DEVICES_NAME" in
+            oneplus_13 | oneplus_ace5_pro)
+              DEFAULT_SUFFIX="-android15-8-g013ec21bba94-abogki383916444-4k"
               ;;
-             'oneplus_ace5_pro')
-              kernel_suffix="-android15-8-g013ec21bba94-abogki383916444-4k"
+            oneplus_13t)
+              DEFAULT_SUFFIX="-android15-8-gba3bcfd39307-abogki413159095-4k"
               ;;
-             'oneplus_13t')
-              kernel_suffix="-android15-8-gba3bcfd39307-abogki413159095-4k"
+            oneplus_pad_2_pro)
+              DEFAULT_SUFFIX="-android15-8-g0261dbe3cf7e-ab12786384-4k"
               ;;
-             'oneplus_pad_2_pro')
-              kernel_suffix="-android15-8-g0261dbe3cf7e-ab12786384-4k"
-              ;;
-             'oneplus_ace5_ultra')
-              kernel_suffix="-android15-8-gfc70d29746a7-abogki412262948-4k"
-              ;;
-            *)
-              kernel_suffix="${{ github.event.inputs.kernel_suffix }}"
+            oneplus_ace5_ultra)
+              DEFAULT_SUFFIX="-android15-8-gfc70d29746a7-abogki412262948-4k"
               ;;
           esac
-         else
-           kernel_suffix="${{ github.event.inputs.kernel_suffix }}"
-         fi
-          sudo sed -i 's/-4k/${{ github.event.inputs.kernel_suffix }}/g' ./common/arch/arm64/configs/gki_defconfig
+          
+          if [ "$orignal_kernel_time_name" = "false" ]; then
+            if [ -n "$kernel_suffix" ]; then
+              DEFAULT_SUFFIX="$kernel_suffix"
+            fi
+          fi
+          ESCAPED_SUFFIX=$(printf '%s\n' "$DEFAULT_SUFFIX" | sed 's:[\/&]:\\&:g')
+          sed -i 's/${scm_version}//' ./common/scripts/setlocalversion
+          sudo sed -i "s/-4k/$ESCAPED_SUFFIX/g" ./common/arch/arm64/configs/gki_defconfig
+          
       - name: Set Kernel Time
         run: | 
-          if [ "${{ orignal_kernel_time_name }}" == "true" ]; then
-           case "${{ inputs.kernel_choice }}" in
-             'oneplus_13')
-               KBUILD_DATE="Tue Dec 17 23:36:49 UTC 2024"  # 示例日期，替换为实际值
-               ;;
-             'oneplus_ace5_pro')
-               KBUILD_DATE="Tue Dec 17 23:36:49 UTC 2024"  # 示例日期，替换为实际值
-               ;;
-             'oneplus_13t')
-               KBUILD_DATE="FriApr 25 01:56:53 UTC 2025"  # 示例日期，替换为实际值
-               ;;
-            'oneplus_pad_2_pro')
-               KBUILD_DATE="Wed Dec 11 19:16:38 UTC 2024"  # 示例日期，替换为实际值
-               ;;
-            'oneplus_ace5_ultra')
-               KBUILD_DATE="Fri Apr 18 19:35:07 UTC 2025"  # 示例日期，替换为实际值
-               ;;
-             *)
-               KBUILD_DATE="${{ inputs.kernel_time }}"
-               ;;
-          esac
-         else
-              KBUILD_DATE="${{ inputs.kernel_time }}"
-         fi
-         export KBUILD_BUILD_TIMESTAMP="$KBUILD_DATE"
+          if [ "$orignal_kernel_time_name" = "false" ] && [ -n "$kernel_time" ]; then
+            echo "KERNEL_TIME=$kernel_time" >> $GITHUB_ENV
+          else
+            case "$DEVICES_NAME" in
+              oneplus_13 | oneplus_ace5_pro)
+                echo 'KERNEL_TIME=Tue Dec 17 23:36:49 UTC 2024' >> $GITHUB_ENV
+                ;;
+              oneplus_13t)
+                echo 'KERNEL_TIME=FriApr 25 01:56:53 UTC 2025' >> $GITHUB_ENV
+                ;;
+              oneplus_pad_2_pro)
+                echo 'KERNEL_TIME=Wed Dec 11 19:16:38 UTC 2024' >> $GITHUB_ENV
+                ;;
+              oneplus_ace5_ultra)
+                echo 'KERNEL_TIME=Fri Apr 18 19:35:07 UTC 2025' >> $GITHUB_ENV
+                ;;
+            esac
+          fi
+          export KBUILD_BUILD_TIMESTAMP="${KERNEL_TIME}"
       
       - name: Build Kernel
         run: |
           export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r510928/bin:$PATH"
           export PATH="/usr/lib/ccache:$PATH"
+          
           export CCACHE_COMPILERCHECK="%compiler% -dumpmachine; %compiler% -dumpversion"
           export CCACHE_NOHASHDIR="true"
           export CCACHE_HARDLINK="true"
