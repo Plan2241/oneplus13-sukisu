@@ -54,6 +54,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: 📊 Check disk space (检查磁盘空间)
+        run: |
+          echo "构建前磁盘空间："
+          df -h
+      
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
         with:
@@ -359,3 +364,8 @@ jobs:
         with:
          name: SuKiSu_${{ env.KSUVER }}_oneplus_13
          path: ./AnyKernel3/*
+
+      - name: 📊 Post-build disk check (构建后空间检查)
+        run: |
+          echo "构建后磁盘空间："
+          df -h
